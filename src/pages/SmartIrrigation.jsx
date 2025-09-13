@@ -164,6 +164,15 @@ export default function SmartIrrigation() {
 
   return (
     <div className="p-6 space-y-6">
+     <div className="rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 text-white shadow-lg p-10 text-center">
+  <h1 className="text-5xl font-extrabold tracking-wide drop-shadow-lg animate-pulse">
+    🌱 Crop Monitoring Dashboard
+  </h1>
+  <p className="mt-4 text-lg text-gray-100">
+    Real-time insights for your smart irrigation system
+  </p>
+</div>
+
       {/* 🌍 Dashboard */}
         <div className="flex justify-end mb-4">
           <select
