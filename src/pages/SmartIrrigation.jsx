@@ -123,20 +123,70 @@ export default function SmartIrrigation() {
       alert("🌱 Soil moisture is low! Auto irrigation started.");
     }
   }, [soilMoisture, threshold, irrigationOn, selectedCrop]);
+  const translations = {
+    en: {
+      soil: "Soil Moisture",
+      water: "Water Level",
+      temp: "Temperature",
+      irrigation: "Irrigation",
+      start: "Start",
+      stop: "Stop",
+      settings: "Settings",
+      threshold: "Soil Moisture Threshold (%)",
+      search: "Search for a crop...",
+      save: "Save",
+      saved: "✅ Saved settings for",
+      warning: "⚠️ Soil moisture is low!",
+      completed: "⏰ Irrigation completed!",
+      autoStart: "🌱 Soil moisture is low! Auto irrigation started."
+    },
+    ta: {
+      soil: "மண் ஈரப்பதம்",
+      water: "தண்ணீர் நிலை",
+      temp: "வெப்பநிலை",
+      irrigation: "நீர்ப்பாசனம்",
+      start: "தொடங்கு",
+      stop: "நிறுத்து",
+      settings: "அமைப்புகள்",
+      threshold: "மண் ஈரப்பதம் எல்லை (%)",
+      search: "பயிரை தேடவும்...",
+      save: "சேமி",
+      saved: "✅ பயிர் சேமிக்கப்பட்டது:",
+      warning: "⚠️ மண் ஈரப்பதம் குறைந்துள்ளது!",
+      completed: "⏰ நீர்ப்பாசனம் முடிந்தது!",
+      autoStart: "🌱 மண் ஈரப்பதம் குறைந்தது! தானாக நீர்ப்பாசனம் தொடங்கப்பட்டது.",
+      the:"மண் ஈரப்பதம் எல்லை (%)",
+      setting:"அமைப்புகள்"
+    }
+  };
+  const [language, setLanguage] = useState("en");
+  const t = translations[language]; // shorthand
 
   return (
     <div className="p-6 space-y-6">
       {/* 🌍 Dashboard */}
+        <div className="flex justify-end mb-4">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="border rounded-lg p-2"
+          >
+            <option value="en">English</option>
+            <option value="ta">தமிழ்</option>
+          </select>
+        </div>
       <motion.div
         className="grid md:grid-cols-4 gap-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
+      
+
         {/* Soil Moisture */}
         <div className="bg-white rounded-2xl p-6 text-center shadow-lg relative">
           <Thermometer className="mx-auto text-blue-500 w-12 h-12 mb-2" />
-          <h2 className="text-lg font-semibold">Soil Moisture</h2>
+          <h2 className="text-lg font-semibold">{t.soil}</h2>
           <p
             className={`text-2xl font-bold ${soilMoisture < threshold ? "text-red-600" : "text-blue-600"
               }`}
@@ -155,14 +205,14 @@ export default function SmartIrrigation() {
         {/* Water Level */}
         <div className="bg-white rounded-2xl p-6 text-center shadow-lg">
           <Droplet className="mx-auto text-green-500 w-12 h-12 mb-2" />
-          <h2 className="text-lg font-semibold">Water Level</h2>
+          <h2 className="text-lg font-semibold">{t.water}</h2>
           <p className="text-2xl font-bold text-green-600">{waterLevel.toFixed(1)}%</p>
         </div>
 
         {/* Temperature */}
         <div className="bg-white rounded-2xl p-6 text-center shadow-lg">
           <Thermometer className="mx-auto text-orange-500 w-12 h-12 mb-2" />
-          <h2 className="text-lg font-semibold">Temperature</h2>
+          <h2 className="text-lg font-semibold">{t.temp}</h2>
           <p className="text-2xl font-bold text-orange-600">{temperature.toFixed(1)}°C</p>
         </div>
 
@@ -173,7 +223,7 @@ export default function SmartIrrigation() {
             className={`mx-auto w-12 h-12 mb-2 ${irrigationOn ? "text-red-500" : "text-gray-500"
               }`}
           />
-          <h2 className="text-lg font-semibold">Irrigation</h2>
+          <h2 className="text-lg font-semibold">{t.irrigation}</h2>
 
           {/* Timer */}
           {irrigationOn && (
@@ -209,7 +259,7 @@ export default function SmartIrrigation() {
             className={`mt-3 px-4 py-2 rounded-xl font-bold shadow-md relative z-10 ${irrigationOn ? "bg-red-500 text-white" : "bg-green-500 text-white"
               }`}
           >
-            {irrigationOn ? "Stop" : "Start"}
+           {irrigationOn ? t.stop : t.start}
           </button>
         </div>
 
@@ -217,11 +267,11 @@ export default function SmartIrrigation() {
 
       {/* ⚙️ Settings */}
       <div className="bg-white p-6 rounded-2xl shadow-lg max-w-3xl mx-auto">
-        <h2 className="text-xl font-bold mb-4">⚙️ Settings</h2>
+        <h2 className="text-xl font-bold mb-4">⚙️{t.settings}</h2>
 
         {/* Threshold */}
         <label className="block font-medium mb-2">
-          Soil Moisture Threshold (%)
+         {t.the}
         </label>
         <input
           type="number"
@@ -305,7 +355,7 @@ export default function SmartIrrigation() {
           onClick={handleSave}
           className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md"
         >
-          Save
+          {t.save}
         </button>
       </div>
     </div>
