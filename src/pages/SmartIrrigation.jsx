@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Droplet, Thermometer, Power, Clock } from "lucide-react";
+import WeatherApp from "./WeatherApp";
+
+
 
 export default function SmartIrrigation() {
   // 🌱 States
@@ -14,6 +17,8 @@ export default function SmartIrrigation() {
   const [soilMoisture, setSoilMoisture] = useState(45);
   const [waterLevel, setWaterLevel] = useState(70);
   const [temperature, setTemperature] = useState(28);
+  const [tankLevel, setTankLevel] = useState(100);
+
 
   // ⏱️ Irrigation timer (in seconds)
   const [timer, setTimer] = useState(0);
@@ -28,7 +33,7 @@ export default function SmartIrrigation() {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Crop list
+
   const crops = {
     "Rice (Paddy)": { flow: "50 mins", level: "High" },
     Maize: { flow: "40 mins", level: "Medium" },
@@ -59,7 +64,7 @@ export default function SmartIrrigation() {
 
   const cropNames = Object.keys(crops);
 
-  // 🔎 Search filter
+
   const filteredCrops =
     search.trim() === ""
       ? cropNames
@@ -67,7 +72,7 @@ export default function SmartIrrigation() {
         crop.toLowerCase().includes(search.toLowerCase())
       );
 
-  // ⏳ Handle irrigation timer countdown
+  //  irrigation timer
   useEffect(() => {
     if (irrigationOn && timer > 0) {
       const countdown = setInterval(() => {
@@ -82,12 +87,12 @@ export default function SmartIrrigation() {
 
   // Convert "30 mins" → seconds
   const parseMinutes = (str) => {
-    if (!str) return 600; // default 10 mins
+    if (!str) return 600;
     const num = parseInt(str);
     return isNaN(num) ? 600 : num * 60;
   };
 
-  // 🟢 Toggle irrigation
+  // Toggle irrigation
   const handleIrrigation = () => {
     if (!irrigationOn) {
       const cropTime = selectedCrop ? crops[selectedCrop].flow : "10 mins";
@@ -123,6 +128,29 @@ export default function SmartIrrigation() {
       alert("🌱 Soil moisture is low! Auto irrigation started.");
     }
   }, [soilMoisture, threshold, irrigationOn, selectedCrop]);
+  // ⏳ Handle irrigation timer countdown + tank ↔ field connection
+
+  useEffect(() => {
+    if (irrigationOn && timer > 0) {
+      const countdown = setInterval(() => {
+        setTimer((t) => t - 1);
+
+        // ⬇️ Decrease tank level
+        setTankLevel((prev) => Math.max(0, prev - 0.1));
+
+        // ⬆️ Increase field water level
+        setWaterLevel((prev) => Math.min(100, prev + 0.1));
+      }, 1000);
+
+      return () => clearInterval(countdown);
+    } else if (irrigationOn && timer === 0) {
+      setIrrigationOn(false);
+      alert("⏰ Irrigation completed!");
+    }
+  }, [irrigationOn, timer]);
+  
+
+
   const translations = {
     en: {
       soil: "Soil Moisture",
@@ -138,10 +166,12 @@ export default function SmartIrrigation() {
       saved: "✅ Saved settings for",
       warning: "⚠️ Soil moisture is low!",
       completed: "⏰ Irrigation completed!",
-      autoStart: "🌱 Soil moisture is low! Auto irrigation started."
+      autoStart: "🌱 Soil moisture is low! Auto irrigation started.",
+      lang: "Language"
     },
     ta: {
       soil: "மண் ஈரப்பதம்",
+      lang: "மொழி",
       water: "தண்ணீர் நிலை",
       temp: "வெப்பநிலை",
       irrigation: "நீர்ப்பாசனம்",
@@ -155,42 +185,61 @@ export default function SmartIrrigation() {
       warning: "⚠️ மண் ஈரப்பதம் குறைந்துள்ளது!",
       completed: "⏰ நீர்ப்பாசனம் முடிந்தது!",
       autoStart: "🌱 மண் ஈரப்பதம் குறைந்தது! தானாக நீர்ப்பாசனம் தொடங்கப்பட்டது.",
-      the:"மண் ஈரப்பதம் எல்லை (%)",
-      setting:"அமைப்புகள்"
-    }
+      the: "மண் ஈரப்பதம் எல்லை (%)",
+      setting: "அமைப்புகள்"
+    },
+     hi: {
+    soil: "मृदा नमी",
+    water: "पानी का स्तर",
+    temp: "तापमान",
+    irrigation: "सिंचाई",
+    start: "शुरू करें",
+    stop: "रोकें",
+    settings: "सेटिंग्स",
+    threshold: "मृदा नमी सीमा (%)",
+    search: "फसल खोजें...",
+    save: "सहेजें",
+    saved: "✅ सेटिंग्स सहेज ली गईं",
+    warning: "⚠️ मृदा नमी कम है!",
+    completed: "⏰ सिंचाई पूरी हुई!",
+    autoStart: "🌱 मृदा नमी कम है! ऑटो सिंचाई शुरू हो गई।",
+    lang: "भाषा"
+  }
   };
-  const [language, setLanguage] = useState("en");
-  const t = translations[language]; // shorthand
+  // inside SmartIrrigation component
+const [language, setLanguage] = useState(localStorage.getItem("lang") || "en");
+
+  const t = translations[language];
 
   return (
     <div className="p-6 space-y-6">
-     <div className="rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 text-white shadow-lg p-10 text-center">
-  <h1 className="text-5xl font-extrabold tracking-wide drop-shadow-lg animate-pulse">
-    🌱 Crop Monitoring Dashboard
-  </h1>
-  <p className="mt-4 text-lg text-gray-100">
-    Real-time insights for your smart irrigation system
-  </p>
-</div>
-
-      {/* 🌍 Dashboard */}
-        <div className="flex justify-end mb-4">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="border rounded-lg p-2"
-          >
-            <option value="en">English</option>
-            <option value="ta">தமிழ்</option>
-          </select>
-        </div>
+      <div className="rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 text-white shadow-lg p-6 sm:p-10 text-center mx-2 sm:mx-auto max-w-6xl">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide drop-shadow-lg animate-pulse">
+          🌱 Crop Monitoring Dashboard
+        </h1>
+        <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg lg:text-xl text-gray-100">
+          Real-time insights for your smart irrigation system
+        </p>
+      </div>
+      <div className="flex justify-end mb-4">
+        <h2 className="font-bold m-3">{t.lang}</h2>
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="border rounded-lg p-2"
+        >
+          <option value="en">English</option>
+          <option value="ta">தமிழ்</option>
+          <option value="hi">Hindi</option>
+        </select>
+      </div>
       <motion.div
         className="grid md:grid-cols-4 gap-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-      
+
 
         {/* Soil Moisture */}
         <div className="bg-white rounded-2xl p-6 text-center shadow-lg relative">
@@ -262,111 +311,143 @@ export default function SmartIrrigation() {
             </motion.div>
           )}
 
-          {/* Button */}
+
           <button
             onClick={handleIrrigation}
             className={`mt-3 px-4 py-2 rounded-xl font-bold shadow-md relative z-10 ${irrigationOn ? "bg-red-500 text-white" : "bg-green-500 text-white"
               }`}
           >
-           {irrigationOn ? t.stop : t.start}
+            {irrigationOn ? t.stop : t.start}
           </button>
         </div>
 
       </motion.div>
+      <div className="bg-white p-6 rounded-2xl shadow-lg max-w-5xl mx-auto">
+        <h2 className="text-xl font-bold mb-4">🌾 {language === "ta" ? "பயிர் தரவுத்தளம்" : "Crop Database"}</h2>
 
-      {/* ⚙️ Settings */}
-      <div className="bg-white p-6 rounded-2xl shadow-lg max-w-3xl mx-auto">
-        <h2 className="text-xl font-bold mb-4">⚙️{t.settings}</h2>
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* 🌱 Crop Database Section (Left) */}
+          <div className="flex-1">
+            {/* Threshold */}
 
-        {/* Threshold */}
-        <label className="block font-medium mb-2">
-         {t.the}
-        </label>
-        <input
-          type="number"
-          value={threshold}
-          onChange={(e) => setThreshold(Number(e.target.value))}
-          className="border rounded-lg p-2 w-full mb-4"
-        />
+            <label className="block font-medium mb-2">{t.threshold}</label>
+            <input
+              type="number"
+              value={threshold}
+              onChange={(e) => setThreshold(Number(e.target.value))}
+              className="border rounded-lg p-2 w-full mb-4"
+            />
 
-        {/* Search bar + Show all */}
-        <div className="flex items-center gap-2 mb-2">
-          <input
-            type="text"
-            placeholder="Search for a crop..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg p-2 w-full"
-          />
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="px-3 py-2 rounded-lg bg-green-100 hover:bg-green-200"
-            title="Show all crops"
-          >
-            🌱
-          </button>
-        </div>
 
-        {/* Crop list */}
-        {!showAll ? (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {filteredCrops.map((crop) => (
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                placeholder="Search for a crop..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border rounded-lg p-2 w-full"
+              />
               <button
-                key={crop}
-                onClick={() => setSelectedCrop(crop)}
-                className={`px-3 py-1 rounded-full border ${selectedCrop === crop
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-100 hover:bg-green-100"
-                  }`}
+                onClick={() => setShowAll(!showAll)}
+                className="px-3 py-2 rounded-lg bg-green-100 hover:bg-green-200"
+                title="Show all crops"
               >
-                {crop}
+                🌱
               </button>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-            {cropNames.map((crop) => (
-              <button
-                key={crop}
-                onClick={() => setSelectedCrop(crop)}
-                className={`p-2 rounded-lg border text-sm ${selectedCrop === crop
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-100 hover:bg-green-100"
-                  }`}
-              >
-                {crop}
-              </button>
-            ))}
-          </div>
-        )}
+            </div>
 
-        {/* Show selected crop details */}
-        {selectedCrop && (
-          <div className="mb-4 p-3 border rounded-lg bg-green-50 text-center">
-            <p>🌱 <b>{selectedCrop}</b></p>
-            <p>💧 Water Flow: {crops[selectedCrop].flow}</p>
-            <p>📊 Water Level: {crops[selectedCrop].level}</p>
+            {/* Crop list */}
+            {!showAll ? (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {filteredCrops.map((crop) => (
+                  <button
+                    key={crop}
+                    onClick={() => setSelectedCrop(crop)}
+                    className={`px-3 py-1 rounded-full border ${selectedCrop === crop
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-100 hover:bg-green-100"
+                      }`}
+                  >
+                    {crop}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                {cropNames.map((crop) => (
+                  <button
+                    key={crop}
+                    onClick={() => setSelectedCrop(crop)}
+                    className={`p-2 rounded-lg border text-sm ${selectedCrop === crop
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-100 hover:bg-green-100"
+                      }`}
+                  >
+                    {crop}
+                  </button>
+                ))}
+              </div>
+            )}
 
-            {/* 🌿 Growing animation */}
-            <motion.div
-              key={selectedCrop}
-              className="text-4xl mt-3"
-              initial={{ scale: 0 }}
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
+            {/* Show selected crop details */}
+            {selectedCrop && (
+              <div className="mb-4 p-3 border rounded-lg bg-green-50 text-center">
+                <p>🌱 <b>{selectedCrop}</b></p>
+                <p>💧 Water Flow: {crops[selectedCrop].flow}</p>
+                <p>📊 Water Level: {crops[selectedCrop].level}</p>
+
+                {/* Growing animation */}
+                <motion.div
+                  key={selectedCrop}
+                  className="text-4xl mt-3"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  🌱
+                </motion.div>
+              </div>
+            )}
+
+            <button
+              onClick={handleSave}
+              className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md"
             >
-              🌱
-            </motion.div>
+              {t.save}
+            </button>
           </div>
-        )}
 
-        <button
-          onClick={handleSave}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md"
-        >
-          {t.save}
-        </button>
+          {/* 🌧️ Rainwater Tank Section (Right) */}
+          <div className="w-full md:w-60 flex flex-col items-center bg-white rounded-2xl p-6 shadow-lg">
+            <h2 className="text-lg font-semibold mb-2">Rainwater Tank</h2>
+
+            {/* Tank Container */}
+            <div className="relative w-24 h-40 border-4 border-blue-500 rounded-lg overflow-hidden">
+              {/* Water Fill */}
+              <motion.div
+                className="absolute bottom-0 left-0 w-full bg-blue-400"
+                animate={{ height: `${tankLevel}%` }}
+                transition={{ duration: 1 }}
+              />
+              {/* Wave Effect */}
+              <motion.div
+                className="absolute bottom-0 left-0 w-full h-1/2 bg-blue-300 opacity-60"
+                animate={{ x: ["0%", "100%"] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+              />
+            </div>
+
+            {/* Tank Level Text */}
+            <p className="mt-3 text-lg font-bold text-blue-700">
+              {tankLevel.toFixed(1)}%
+            </p>
+          </div>
+        </div>
+       
+        
+        
       </div>
+      <div ><WeatherApp/></div>
     </div>
   );
 }

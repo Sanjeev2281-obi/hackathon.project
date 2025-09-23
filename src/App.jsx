@@ -5,6 +5,8 @@ import Sensors from "./pages/Sensors";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
 import SmartIrrigation from "./pages/SmartIrrigation";
+import LanguageSelect from "./Components/LanguageSelect";
+
 
 export default function App() {
   return (
@@ -13,10 +15,8 @@ export default function App() {
         
         <div className="p-6">
           <Routes>
-            <Route path="/" element={<SmartIrrigation />} />
-            <Route path="/sensors" element={<Sensors />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/" element={<LanguageSelect />} />
+            <Route path="/Dashboard" element={<SmartIrrigation />} />  
           </Routes>
         </div>
       </div>
