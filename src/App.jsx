@@ -1,9 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-
-import Sensors from "./pages/Sensors";
-import History from "./pages/History";
-import Settings from "./pages/Settings";
 import SmartIrrigation from "./pages/SmartIrrigation";
 import LanguageSelect from "./Components/LanguageSelect";
 import WeatherApp from "./pages/WeatherApp";
