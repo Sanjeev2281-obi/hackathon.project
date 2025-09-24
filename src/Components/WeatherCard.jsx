@@ -7,12 +7,12 @@ export default function WeatherCard({ weather }) {
       <h2 className="text-xl font-bold mb-2">
         🌍 {weather.name}, {weather.sys.country}
       </h2>
-      <p className="text-gray-600">🌡️ Temp: {weather.main.temp} °C</p>
-      <p className="text-gray-600">
+      <p className="text-gray-600 font-bold">🌡️ Temp: {weather.main.temp} °C</p>
+      <p className="text-gray-600 font-bold">
         🌤️ Condition: {weather.weather[0].description}
       </p>
-      <p className="text-gray-600">💧 Humidity: {weather.main.humidity}%</p>
-      <p className="text-gray-600">💨 Wind: {weather.wind.speed} m/s</p>
+      <p className="text-gray-600 font-bold">💧 Humidity: {weather.main.humidity}%</p>
+      <p className="text-gray-600 font-bold">💨 Wind: {weather.wind.speed} m/s</p>
     </div>
   );
 }
