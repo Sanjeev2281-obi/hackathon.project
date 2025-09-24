@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import LocationPicker from "../Components/LoctionPicker"; // fix typo too
 import WeatherCard from "../Components/WeatherCard";
-import { getWeather } from "../Api/Weather";
+import { getWeather } from "../api/weather";
 
 export default function WeatherApp() {
   const [weather, setWeather] = useState(null);
