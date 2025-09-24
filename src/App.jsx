@@ -5,7 +5,7 @@ import Sensors from "./pages/Sensors";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
 import SmartIrrigation from "./pages/SmartIrrigation";
-import LanguageSelect from "./Components/LanguageSelect";
+import LanguageSelect from "./components/LanguageSelect";
 import WeatherApp from "./pages/WeatherApp";
 
 export default function App() {

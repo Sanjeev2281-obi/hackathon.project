@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Droplet, Thermometer, Power, Clock } from "lucide-react";
 import { Battery } from "lucide-react";
 
-import WeatherApp from "./WeatherApp";
+
 
 
 
@@ -20,6 +20,7 @@ export default function SmartIrrigation() {
 
   const [temperature, setTemperature] = useState(28);
   const [tankLevel, setTankLevel] = useState(100);
+  const [waterLevel, setWaterLevel] = useState(0); 
 
 
   // ⏱️ Irrigation timer (in seconds)
@@ -79,13 +80,21 @@ export default function SmartIrrigation() {
     if (irrigationOn && timer > 0) {
       const countdown = setInterval(() => {
         setTimer((t) => t - 1);
+
+        // ⬇️ Decrease tank level
+        setTankLevel((prev) => Math.max(0, prev - 0.1));
+
+        // ⬆️ Increase field water level
+        setWaterLevel((prev) => Math.min(100, prev + 0.1));
       }, 1000);
+
       return () => clearInterval(countdown);
     } else if (irrigationOn && timer === 0) {
       setIrrigationOn(false);
       alert("⏰ Irrigation completed!");
     }
   }, [irrigationOn, timer]);
+
 
   // Convert "30 mins" → seconds
   const parseMinutes = (str) => {
