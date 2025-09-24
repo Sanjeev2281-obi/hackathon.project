@@ -17,7 +17,7 @@ export default function LanguageSelect() {
 
         <button
           onClick={() => handleSelect("en")}
-          className="px-9 py-3 rounded-xl bg-white text-black font-semibold hover:bg-gray-200"
+          className="px-6 py-3 rounded-xl bg-white text-black font-semibold hover:bg-gray-200"
         >
           English
         </button>

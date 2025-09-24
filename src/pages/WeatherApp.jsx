@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import LocationPicker from "../Components/LoctionPicker";
 import WeatherCard from "../components/WeatherCard";
 import { getWeather } from "../api/weather";
@@ -8,6 +8,7 @@ export default function WeatherApp() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState(""); // search input
   const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // default India
+  const weatherRef = useRef(null); // 🔹 ref for weather section
 
   async function handleLocationSelect(latlng) {
     setLoading(true);
@@ -15,6 +16,11 @@ export default function WeatherApp() {
       const data = await getWeather(latlng.lat, latlng.lng);
       setWeather(data);
       setMapCenter([latlng.lat, latlng.lng]); // update map center
+
+      // 🔹 Scroll to weather section
+      setTimeout(() => {
+        weatherRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
     } catch (err) {
       console.error(err);
       alert("Error fetching weather");
@@ -47,44 +53,44 @@ export default function WeatherApp() {
   }
 
   return (
-    <div className="bg-[url('')]">
-    <div className="p-6 max-w-3xl mx-auto ">
-      <h1 className="text-3xl font-bold mb-4 text-center">
-        🌾 Select your Location
-      </h1>
-      <p className="text-gray-600 mb-4 text-center">
-        Select your farmland location on the map or search by place name.
-      </p>
+    <div className="bg-[url('https://thumbs.dreamstime.com/b/rural-farmland-mountain-landscape-countryside-village-illustration-illustration-depicts-serene-rural-landscape-featuring-386114971.jpg')] bg-cover bg-center min-h-screen">
+      <div className="p-6 max-w-3xl mx-auto bg-white/80 rounded-xl shadow-lg">
+        <h1 className="text-3xl font-bold mb-4 text-center">
+          🌾 Select your Location
+        </h1>
+        <p className="text-gray-600 mb-4 text-center">
+          Select your farmland location on the map or search by place name.
+        </p>
 
-      {/* 🔹 Search Bar */}
-      <form
-        onSubmit={handleSearch}
-        className="flex gap-2 mb-4 justify-center"
-      >
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Enter city or village..."
-          className="border border-gray-400 p-3 rounded w-2/3"
+        {/* 🔹 Search Bar */}
+        <form onSubmit={handleSearch} className="flex gap-2 mb-4 justify-center">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Enter city or village..."
+            className="border border-gray-400 p-3 rounded w-2/3"
+          />
+          <button
+            type="submit"
+            className="bg-green-500 text-white px-4 rounded hover:bg-green-600"
+          >
+            Search
+          </button>
+        </form>
+
+        {/* 🔹 Map Component */}
+        <LocationPicker
+          onLocationSelect={handleLocationSelect}
+          center={mapCenter}
         />
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-4 rounded hover:bg-green-600"
-        >
-          Search
-        </button>
-      </form>
 
-      {/* 🔹 Map Component */}
-      <LocationPicker
-        onLocationSelect={handleLocationSelect}
-        center={mapCenter}
-      />
-
-      {loading && <p className="text-center mt-4">Loading weather...</p>}
-      {!loading && weather && <WeatherCard weather={weather} />}
-    </div>
+        {/* 🔹 Weather Section */}
+        <div ref={weatherRef} className="mt-6">
+          {loading && <p className="text-center">Loading weather...</p>}
+          {!loading && weather && <WeatherCard weather={weather} />}
+        </div>
+      </div>
     </div>
   );
 }
