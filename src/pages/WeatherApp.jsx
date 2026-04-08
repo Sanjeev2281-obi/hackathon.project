@@ -85,7 +85,7 @@ export default function WeatherApp() {
   }
 
   return (
-    <div className="bg-[url('https://thumbs.dreamstime.com/b/rural-farmland-mountain-landscape-countryside-village-illustration-illustration-depicts-serene-rural-landscape-featuring-386114971.jpg')] bg-cover bg-center min-h-screen">
+    <div className="bg-white bg-center min-h-screen">
       <div className="p-6 max-w-3xl mx-auto bg-white/80 rounded-xl shadow-lg">
         <h1 className="text-3xl font-bold mb-4 text-center">
           🌾 Select your Location
