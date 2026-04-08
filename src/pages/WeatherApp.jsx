@@ -9,6 +9,7 @@ export default function WeatherApp() {
   const [search, setSearch] = useState(""); // search input
   const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // default India
   const weatherRef = useRef(null); // 🔹 ref for weather section
+  
 
   async function handleLocationSelect(latlng) {
     setLoading(true);
@@ -30,6 +31,37 @@ export default function WeatherApp() {
   }
 
   // 🔹 Handle search submit
+//   async function handleLocationSelect(latlng) {
+//   setLoading(true);
+//   try {
+//     const data = await getWeather(latlng.lat, latlng.lng);
+
+//     // ✅ Extract only needed values
+//     const weatherData = {
+//       temp: data.main.temp,
+//       humidity: data.main.humidity,
+//       rain: data.rain?.["1h"] || 0
+//     };
+
+//     setWeather(weatherData); // ✅ store clean data
+//     setMapCenter([latlng.lat, latlng.lng]);
+
+//     // ✅ CALL CROP LOGIC HERE
+//     const crops = suggestCrops(weatherData, 45); // soil = 45 (temporary)
+//     setSuggestions(crops);
+
+//     // scroll
+//     setTimeout(() => {
+//       weatherRef.current?.scrollIntoView({ behavior: "smooth" });
+//     }, 300);
+
+//   } catch (err) {
+//     console.error(err);
+//     alert("Error fetching weather");
+//   } finally {
+//     setLoading(false);
+//   }
+// }
   async function handleSearch(e) {
     e.preventDefault();
     if (!search) return;
